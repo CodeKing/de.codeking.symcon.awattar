@@ -1,0 +1,76 @@
+{
+  "elements": [
+    {
+      "type": "Label",
+      "label": "___ [ Support ] ________________________________________________________________________________________"
+    },
+    {
+      "type": "Label",
+      "label": "If you like this module and want to support further development of my symcon modules, feel free to donate at www.paypal.me/codeking"
+    },
+    {
+      "type": "Label",
+      "label": "www.paypal.me/codeking"
+    },
+    {
+      "type": "Label",
+      "label": "___ [ Settings ] ________________________________________________________________________________________________"
+    },
+    {
+      "type": "Select",
+      "name": "country",
+      "caption": "Country",
+      "options": [
+        {
+          "caption": "Germany",
+          "value": "DE"
+        },
+        {
+          "caption": "Austria",
+          "value": "AT"
+        }
+      ]
+    },
+    {
+      "name": "ip",
+      "type": "ValidationTextBox",
+      "caption": "API Token"
+    },
+    {
+      "type": "Label",
+      "label": "___ [ Discount ] ________________________________________________________________________________________________"
+    },
+    {
+      "type": "Label",
+      "label": "If you want to register to awattar.de, you can use my coupon code, to save 20€:"
+    },
+    {
+      "type": "Label",
+      "label": "CODEKING"
+    }
+  ],
+  "status": [
+    {
+      "code": 101,
+      "icon": "inactive",
+      "caption": "Please enter your aWATTar api token."
+    },
+    {
+      "code": 102,
+      "icon": "active",
+      "caption": "Connection to aWATTar api has been established."
+    },
+    {
+      "code": 200,
+      "icon": "inactive",
+      "caption": "Error: Could not connect to aWATTar api. Please check your token!"
+    }
+  ],
+  "actions": [
+    {
+      "type": "Button",
+      "label": "Update Data",
+      "onClick": "aWATTar_UpdateManually($id);"
+    }
+  ]
+}
