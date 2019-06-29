@@ -32,7 +32,7 @@
       ]
     },
     {
-      "name": "ip",
+      "name": "token",
       "type": "ValidationTextBox",
       "caption": "API Token"
     },

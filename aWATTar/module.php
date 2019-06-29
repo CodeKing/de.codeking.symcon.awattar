@@ -115,16 +115,26 @@ class aWATTar extends Module
      */
     public function onKernelReady()
     {
-        $this->Update();
+        // check configuration data
+        $validConfig = $this->ReadConfig();
+
+        // update timer
+        if ($validConfig) {
+            $this->SetTimerInterval('UpdateData', 3600 * 1000);
+            $this->Update();
+        }
     }
 
     /**
      * Read config
+     * @return bool
      */
-    private function ReadConfig()
+    private function ReadConfig(): bool
     {
         $this->token = $this->ReadPropertyString('token');
         $this->country = $this->ReadPropertyString('country');
+
+        return $this->country == 'DE' || ($this->token && $this->country == 'AT');
     }
 
     /**
@@ -155,6 +165,8 @@ class aWATTar extends Module
     {
         if ($this->Update()) {
             echo 'OK';
+        } else {
+            echo 'Error';
         }
     }
 
