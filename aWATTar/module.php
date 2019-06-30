@@ -35,30 +35,30 @@ class aWATTar extends Module
         'price_median' => 'Median Price',
         'price_average' => 'Average Price',
         'price_current' => 'Current Price',
-        'price_threshold_00' => 'Price 0-1h',
-        'price_threshold_01' => 'Price 1-2h',
-        'price_threshold_02' => 'Price 2-3h',
-        'price_threshold_03' => 'Price 3-4h',
-        'price_threshold_04' => 'Price 4-5h',
-        'price_threshold_05' => 'Price 5-6h',
-        'price_threshold_06' => 'Price 6-7h',
-        'price_threshold_07' => 'Price 7-8h',
-        'price_threshold_08' => 'Price 8-9h',
-        'price_threshold_09' => 'Price 9-10h',
-        'price_threshold_10' => 'Price 10-11h',
-        'price_threshold_11' => 'Price 11-12h',
-        'price_threshold_12' => 'Price 12-13h',
-        'price_threshold_13' => 'Price 13-14h',
-        'price_threshold_14' => 'Price 14-15h',
-        'price_threshold_15' => 'Price 15-16h',
-        'price_threshold_16' => 'Price 16-17h',
-        'price_threshold_17' => 'Price 17-18h',
-        'price_threshold_18' => 'Price 18-19h',
-        'price_threshold_19' => 'Price 19-20h',
-        'price_threshold_20' => 'Price 20-21h',
-        'price_threshold_21' => 'Price 21-22h',
-        'price_threshold_22' => 'Price 22-23h',
-        'price_threshold_23' => 'Price 23-24h'
+        'data_price_hour_abs_00_amount' => 'Price 0-1h',
+        'data_price_hour_abs_01_amount' => 'Price 1-2h',
+        'data_price_hour_abs_02_amount' => 'Price 2-3h',
+        'data_price_hour_abs_03_amount' => 'Price 3-4h',
+        'data_price_hour_abs_04_amount' => 'Price 4-5h',
+        'data_price_hour_abs_05_amount' => 'Price 5-6h',
+        'data_price_hour_abs_06_amount' => 'Price 6-7h',
+        'data_price_hour_abs_07_amount' => 'Price 7-8h',
+        'data_price_hour_abs_08_amount' => 'Price 8-9h',
+        'data_price_hour_abs_09_amount' => 'Price 9-10h',
+        'data_price_hour_abs_10_amount' => 'Price 10-11h',
+        'data_price_hour_abs_11_amount' => 'Price 11-12h',
+        'data_price_hour_abs_12_amount' => 'Price 12-13h',
+        'data_price_hour_abs_13_amount' => 'Price 13-14h',
+        'data_price_hour_abs_14_amount' => 'Price 14-15h',
+        'data_price_hour_abs_15_amount' => 'Price 15-16h',
+        'data_price_hour_abs_16_amount' => 'Price 16-17h',
+        'data_price_hour_abs_17_amount' => 'Price 17-18h',
+        'data_price_hour_abs_18_amount' => 'Price 18-19h',
+        'data_price_hour_abs_19_amount' => 'Price 19-20h',
+        'data_price_hour_abs_20_amount' => 'Price 20-21h',
+        'data_price_hour_abs_21_amount' => 'Price 21-22h',
+        'data_price_hour_abs_22_amount' => 'Price 22-23h',
+        'data_price_hour_abs_23_amount' => 'Price 23-24h'
     ];
 
     protected $profile_mappings = [
@@ -204,7 +204,8 @@ class aWATTar extends Module
 
                 // append data, if not blacklisted
                 if (!strstr($key, 'date_now')
-                    && !strstr($key, 'data_price_hour')
+                    && !strstr($key, 'price_threshold_')
+                    && !strstr($key, 'price_hour_rel')
                     && !in_array($key, [
                         'date_start',
                         'date_end',
