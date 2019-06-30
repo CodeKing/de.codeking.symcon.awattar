@@ -272,8 +272,8 @@ class aWATTar extends Module
         if ($response && strstr($response, 'date_now')) {
             $this->SetStatus(102);
 
-            $next_timer = strtotime(date('Y-m-d H:00:05', strtotime('+1 hour')));
-            $this->SetTimerInterval('UpdateData', $next_timer - time() * 1000); // every hour
+            $next_timer = strtotime(date('Y-m-d H:00:10', strtotime('+1 hour')));
+            $this->SetTimerInterval('UpdateData', ($next_timer - time()) * 1000); // every hour
             return $response;
         } else {
             $this->SetStatus(200);
