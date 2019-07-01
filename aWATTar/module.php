@@ -22,44 +22,12 @@ class aWATTar extends Module
     public $data = [];
 
     private $api = [
-        'DE' => 'https://api.awattar.de/v1/marketdata/current.yaml',
-        'AT' => 'https://api.awattar.com/v1/marketdata/current.yaml'
+        'DE' => 'https://api.awattar.de/v1/marketdata',
+        'AT' => 'https://api.awattar.com/v1/marketdata'
     ];
+
     private $token;
     private $country;
-
-    protected $name_mappings = [
-        'date' => 'Date',
-        'price_low' => 'Lowest Price',
-        'price_high' => 'Highest Price',
-        'price_median' => 'Median Price',
-        'price_average' => 'Average Price',
-        'price_current' => 'Current Price',
-        'data_price_hour_abs_00_amount' => 'Price 0-1h',
-        'data_price_hour_abs_01_amount' => 'Price 1-2h',
-        'data_price_hour_abs_02_amount' => 'Price 2-3h',
-        'data_price_hour_abs_03_amount' => 'Price 3-4h',
-        'data_price_hour_abs_04_amount' => 'Price 4-5h',
-        'data_price_hour_abs_05_amount' => 'Price 5-6h',
-        'data_price_hour_abs_06_amount' => 'Price 6-7h',
-        'data_price_hour_abs_07_amount' => 'Price 7-8h',
-        'data_price_hour_abs_08_amount' => 'Price 8-9h',
-        'data_price_hour_abs_09_amount' => 'Price 9-10h',
-        'data_price_hour_abs_10_amount' => 'Price 10-11h',
-        'data_price_hour_abs_11_amount' => 'Price 11-12h',
-        'data_price_hour_abs_12_amount' => 'Price 12-13h',
-        'data_price_hour_abs_13_amount' => 'Price 13-14h',
-        'data_price_hour_abs_14_amount' => 'Price 14-15h',
-        'data_price_hour_abs_15_amount' => 'Price 15-16h',
-        'data_price_hour_abs_16_amount' => 'Price 16-17h',
-        'data_price_hour_abs_17_amount' => 'Price 17-18h',
-        'data_price_hour_abs_18_amount' => 'Price 18-19h',
-        'data_price_hour_abs_19_amount' => 'Price 19-20h',
-        'data_price_hour_abs_20_amount' => 'Price 20-21h',
-        'data_price_hour_abs_21_amount' => 'Price 21-22h',
-        'data_price_hour_abs_22_amount' => 'Price 22-23h',
-        'data_price_hour_abs_23_amount' => 'Price 23-24h'
-    ];
 
     protected $profile_mappings = [
         'Date' => '~UnixTimestampDate',
@@ -177,43 +145,57 @@ class aWATTar extends Module
     private function UpdatePrices()
     {
         // get current data
-        if ($data = $this->GetData()) {
-            // convert yaml to array
-            foreach (explode("\n", $data) AS $line) {
-                list($key, $value) = explode(':', $line);
+        if ($json_data = $this->GetData()) {
+            $this->data = [
+                'Date' => time(),
+                'Lowest Price' => 9999999999999,
+                'Highest Price' => 0,
+                'Median Price' => '',
+                'Average Price' => '',
+                'Current Price' => 0
+            ];
 
-                // trim pairs
-                $key = trim($key);
-                $value = trim($value);
+            $prices = [];
+            foreach ($json_data AS $item) {
+                // convert price to kWh
+                $price = $item['marketprice'] / 10;
 
-                // convert date
-                if ($key == 'date_now_epoch') {
-                    $key = 'date';
-                    $value = intval($value / 1000);
+                // get start / end hour
+                $hour_start = date('G', $item['start_timestamp'] / 1000);
+                $hour_end = date('G', $item['end_timestamp'] / 1000);
+                if ($hour_end == 0) {
+                    $hour_end = 24;
                 }
 
-                // convert price
-                if (strstr($key, 'price')) {
-                    $value = floatval($value);
+                // build price key
+                $key = 'Price ' . $hour_start . '-' . $hour_end . 'h';
+
+                // add data
+                $this->data[$key] = $price;
+                $prices[] = $price;
+
+                // calculate lowest price
+                if ($price < $this->data['Lowest Price']) {
+                    $this->data['Lowest Price'] = $price;
                 }
 
-                // map names
-                if (isset($this->name_mappings[$key])) {
-                    $key = $this->name_mappings[$key];
+                // calculate highest price
+                if ($price > $this->data['Highest Price']) {
+                    $this->data['Highest Price'] = $price;
                 }
 
-                // append data, if not blacklisted
-                if (!strstr($key, 'date_now')
-                    && !strstr($key, 'price_threshold_')
-                    && !strstr($key, 'price_hour_rel')
-                    && !in_array($key, [
-                        'date_start',
-                        'date_end',
-                        'price_unit'
-                    ])) {
-                    $this->data[$key] = $value;
+                // calculate current price
+                if ($hour_start == date('G')) {
+                    $this->data['Current Price'] = $price;
+
                 }
             }
+
+            // calculate average price
+            $this->data['Average Price'] = round(array_sum($prices) / count($prices), 4);
+
+            // calculate median price
+            $this->data['Median Price'] = $this->_calculateMedianPrice($prices);
 
             return true;
         }
@@ -245,6 +227,11 @@ class aWATTar extends Module
      */
     private function GetData()
     {
+        // build params
+        $params = [
+            'start' => strtotime(date('d.m.Y 00:00:00')) * 1000
+        ];
+
         // curl options
         $curlOptions = [
             CURLOPT_TIMEOUT => 10,
@@ -264,18 +251,18 @@ class aWATTar extends Module
         }
 
         // call api
-        $ch = curl_init($this->api[$this->country]);
+        $ch = curl_init($this->api[$this->country] . '?' . http_build_query($params));
         curl_setopt_array($ch, $curlOptions);
-        $response = curl_exec($ch);
+        $response = json_decode(curl_exec($ch), true);
         curl_close($ch);
 
         // check & response data
-        if ($response && strstr($response, 'date_now')) {
+        if ($response && json_last_error() == JSON_ERROR_NONE) {
             $this->SetStatus(102);
 
             $next_timer = strtotime(date('Y-m-d H:00:10', strtotime('+1 hour')));
             $this->SetTimerInterval('UpdateData', ($next_timer - time()) * 1000); // every hour
-            return $response;
+            return isset($response['data']) ? $response['data'] : [];;
         } else {
             $this->SetStatus(200);
             $this->SetTimerInterval('UpdateData', 0); // disable timer
@@ -297,5 +284,30 @@ class aWATTar extends Module
                 IPS_SetVariableProfileText($profile_id, '', ' ct/kWh');
                 break;
         endswitch;
+    }
+
+    /**
+     * calculate median price
+     * @param array $arr
+     * @return float|int|null
+     */
+    protected function _calculateMedianPrice(array $arr)
+    {
+        if (0 === count($arr)) {
+            return null;
+        }
+
+        // sort the data
+        $count = count($arr);
+        asort($arr);
+
+        // get the mid-point keys (1 or 2 of them)
+        $mid = floor(($count - 1) / 2);
+        $keys = array_slice(array_keys($arr), $mid, (1 === $count % 2 ? 1 : 2));
+        $sum = 0;
+        foreach ($keys as $key) {
+            $sum += $arr[$key];
+        }
+        return $sum / count($keys);
     }
 }
