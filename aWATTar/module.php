@@ -28,6 +28,7 @@ class aWATTar extends Module
 
     private $token;
     private $country;
+    private $show_gross_prices = false;
 
     protected $profile_mappings = [
         'Date' => '~UnixTimestampDate',
@@ -72,6 +73,7 @@ class aWATTar extends Module
         // register public properties
         $this->RegisterPropertyString('token', '');
         $this->RegisterPropertyString('country', 'DE');
+        $this->RegisterPropertyBoolean('show_gross_prices', true);
 
         // register update timer
         $this->RegisterTimer('UpdateData', 0, $this->_getPrefix() . '_Update($_IPS[\'TARGET\']);');
@@ -101,6 +103,7 @@ class aWATTar extends Module
     {
         $this->token = $this->ReadPropertyString('token');
         $this->country = $this->ReadPropertyString('country');
+        $this->show_gross_prices = $this->ReadPropertyBoolean('show_gross_prices');
 
         return $this->country == 'DE' || ($this->token && $this->country == 'AT');
     }
@@ -158,7 +161,7 @@ class aWATTar extends Module
             $prices = [];
             foreach ($json_data AS $item) {
                 // convert price to kWh
-                $price = $item['marketprice'] / 10;
+                $price = $this->_price(floatval($item['marketprice'] / 10));
 
                 // get start / end hour
                 $hour_start = date('G', $item['start_timestamp'] / 1000);
@@ -192,10 +195,10 @@ class aWATTar extends Module
             }
 
             // calculate average price
-            $this->data['Average Price'] = round(array_sum($prices) / count($prices), 4);
+            $this->data['Average Price'] = (float)round(array_sum($prices) / count($prices), 4);
 
             // calculate median price
-            $this->data['Median Price'] = $this->_calculateMedianPrice($prices);
+            $this->data['Median Price'] = (float)$this->_calculateMedianPrice($prices);
 
             return true;
         }
@@ -280,10 +283,24 @@ class aWATTar extends Module
         switch ($name):
             case 'kWhCent':
                 IPS_CreateVariableProfile($profile_id, 2); // float
-                IPS_SetVariableProfileDigits($profile_id, 3); // 3 decimals
+                IPS_SetVariableProfileDigits($profile_id, 2); // 2 decimals
                 IPS_SetVariableProfileText($profile_id, '', ' ct/kWh');
                 break;
         endswitch;
+    }
+
+    /**
+     * calculate & round price
+     * @param float $price
+     * @return float
+     */
+    protected function _price(float $price)
+    {
+        if ($this->show_gross_prices) {
+            $price *= ($this->country == 'DE') ? 1.19 : 1;
+        }
+
+        return round($price, 2);
     }
 
     /**

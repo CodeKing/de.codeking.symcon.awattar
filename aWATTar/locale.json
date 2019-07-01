@@ -42,7 +42,8 @@
       "Price 23-24h": "Preis zwischen 23-24 Uhr",
       "Country": "Land",
       "Germany": "Deutschland",
-      "Austria": "Österreich"
+      "Austria": "Österreich",
+      "Show gross prices": "Bruttopreise anzeigen"
     }
   }
 }

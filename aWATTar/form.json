@@ -37,6 +37,11 @@
       "caption": "API Token"
     },
     {
+      "type": "CheckBox",
+      "name": "show_gross_prices",
+      "caption": "Show gross prices"
+    },
+    {
       "type": "Label",
       "label": "___ [ Discount ] ________________________________________________________________________________________________"
     },
