@@ -22,8 +22,14 @@ class aWATTar extends Module
     public $data = [];
 
     private $api = [
-        'DE' => 'https://api.awattar.de/v1/marketdata',
-        'AT' => 'https://api.awattar.com/v1/marketdata'
+        'DE' => [
+            'marketdata' => 'https://api.awattar.de/v1/marketdata',
+            'optimizer' => 'https://api-test.awattar.de/v1/optimizer'
+        ],
+        'AT' => [
+            'marketdata' => 'https://api.awattar.com/v1/marketdata',
+            'optimizer' => 'https://api-test.awattar.at/v1/optimizer'
+        ]
     ];
 
     private $token;
@@ -254,7 +260,7 @@ class aWATTar extends Module
         }
 
         // call api
-        $ch = curl_init($this->api[$this->country] . '?' . http_build_query($params));
+        $ch = curl_init($this->api[$this->country]['marketdata'] . '?' . http_build_query($params));
         curl_setopt_array($ch, $curlOptions);
         $response = json_decode(curl_exec($ch), true);
         curl_close($ch);

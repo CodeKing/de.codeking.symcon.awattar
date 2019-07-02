@@ -1,11 +1,9 @@
 {
   "translations": {
     "de": {
-      "___ [ Settings ] ________________________________________________________________________________________": "___ [ Einstellungen ] _____________________________________________________________________________________________",
+      "___ [ Settings ] ________________________________________________________________________________________________\"": "___ [ Einstellungen ] _____________________________________________________________________________________________",
       "___ [ Support ] ________________________________________________________________________________________": "___ [ Unterstützung ] __________________________________________________________________________________________",
-      "___ [ Discount ] ________________________________________________________________________________________________": "___ [ Rabatt ] ___________________________________________________________________________________________________",
       "If you like this module and want to support further development of my symcon modules, feel free to donate at www.paypal.me/codeking": "Wenn dir dieses Modul gefällt oder du die weitere Entwicklung von IP-Symcon Modulen von mir unterstützen möchtest,\r\nkannst du mir gerne eine kleine Spende zukommen lassen.",
-      "If you want to register to awattar.de, you can use my coupon code, to save 20€:": "Wenn du Neukunde auf awattar.de werden willst, kannst du meinen Rabattcode nutzen um 20€ zu sparen:",
       "Please enter your aWATTar api token.": "Bitte hinterlege deinen aWATTAR API Token",
       "Connection to aWATTar api has been established.": "Die Verbindung zur aWATTar API wurde aufgebaut.",
       "Error: Could not connect to aWATTar api. Please check your token!": "Fehler: Konnte keine Verbindung zur aWATTar API herstellen. Bitte überprüfe deinen Token!",

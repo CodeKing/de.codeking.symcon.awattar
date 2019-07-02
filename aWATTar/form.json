@@ -40,18 +40,6 @@
       "type": "CheckBox",
       "name": "show_gross_prices",
       "caption": "Show gross prices"
-    },
-    {
-      "type": "Label",
-      "label": "___ [ Discount ] ________________________________________________________________________________________________"
-    },
-    {
-      "type": "Label",
-      "label": "If you want to register to awattar.de, you can use my coupon code, to save 20€:"
-    },
-    {
-      "type": "Label",
-      "label": "CODEKING"
     }
   ],
   "status": [
